@@ -1,7 +1,8 @@
 # Portfolio content and customization
 
-These files establish the content contract for the first release. The current
-placeholder page does not read them yet; later tasks add discovery and rendering.
+These files establish the content contract for the first release. The terminal
+currently reads identity, prompt configuration, and enabled about Markdown content.
+Other section commands, theme selection, and browse mode arrive in later tasks.
 
 ## Identity, prompt, theme, and sections
 

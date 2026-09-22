@@ -16,3 +16,19 @@ main {
   padding: clamp(1rem, 5vw, 4rem);
   overflow-wrap: anywhere;
 }
+
+.prompt { color: #93c5fd; }
+.error { color: #fca5a5; }
+.entry { margin-block: 1.5rem; }
+.submitted, pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+pre, input, button { font: inherit; }
+a { color: #93c5fd; }
+.markdown img { max-width: 100%; height: auto; }
+.markdown pre { overflow-x: auto; }
+form { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+input { flex: 1; min-width: 8rem; width: 100%; }
+input, button { color: inherit; background: transparent; border: 1px solid #9ca3af; padding: 0.4rem; }
+button { cursor: pointer; }
+button:disabled { cursor: wait; }
+:focus-visible { outline: 2px solid #93c5fd; outline-offset: 3px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
