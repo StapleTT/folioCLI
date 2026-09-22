@@ -5,6 +5,10 @@ Your portfolio, from the command line.
 Minimal TypeScript, React, and Vite foundation. The current page is a placeholder;
 terminal and browse features are defined in [BRIEF.md](BRIEF.md) and [TASKS.md](TASKS.md).
 
+See [CUSTOMIZATION.md](CUSTOMIZATION.md) for the configuration and sample Markdown
+content, including section visibility and prompt conventions. These files will be
+connected to the UI in subsequent implementation tasks.
+
 ## Local development
 
 Install a current Node.js LTS release (22.12+ or 24+) with npm, then run:
