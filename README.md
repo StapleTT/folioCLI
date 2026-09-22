@@ -46,7 +46,7 @@ when previewing. Full deployment instructions will follow with the deployment ta
 
 ## Current command behavior
 
-Type a command and press Enter or use Run. `help` lists registered commands;
+Type directly after the terminal prompt and press Enter. `help` lists registered commands;
 `about` renders `src/content/about.md` and any `src/content/about/**/*.md` files
 in path order as separate Markdown documents. Set `commands.about` to `false`
 to remove it from lookup and help.

@@ -1,34 +1,37 @@
 :root {
   font-family: ui-monospace, monospace;
-  color: #e5e7eb;
-  background: #111827;
-  line-height: 1.6;
+  font-size: 16px;
+  color: #d3d3d3;
+  background: #000;
+  line-height: 1.25;
   color-scheme: dark;
 }
 
-body {
-  margin: 0;
-}
-
-main {
-  max-width: 60rem;
-  margin-inline: auto;
-  padding: clamp(1rem, 5vw, 4rem);
-  overflow-wrap: anywhere;
-}
-
-.prompt { color: #93c5fd; }
-.error { color: #fca5a5; }
-.entry { margin-block: 1.5rem; }
+body { margin: 0; }
+main { padding: 0.5rem; overflow-wrap: anywhere; }
+h1, h2, h3, h4, h5, h6, pre, input { font: inherit; }
+h1, h2, h3, h4, h5, h6, p, pre { margin: 0; }
+header { margin-bottom: 1em; }
+.entry { margin: 0; }
 .submitted, pre { white-space: pre-wrap; overflow-wrap: anywhere; }
-pre, input, button { font: inherit; }
-a { color: #93c5fd; }
+a { color: inherit; text-decoration: underline; }
+.markdown p, .markdown pre, .markdown ul, .markdown ol, .markdown blockquote { margin-block: 1em; }
 .markdown img { max-width: 100%; height: auto; }
 .markdown pre { overflow-x: auto; }
-form { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
-input { flex: 1; min-width: 8rem; width: 100%; }
-input, button { color: inherit; background: transparent; border: 1px solid #9ca3af; padding: 0.4rem; }
-button { cursor: pointer; }
-button:disabled { cursor: wait; }
-:focus-visible { outline: 2px solid #93c5fd; outline-offset: 3px; }
+.command-line { display: flex; align-items: baseline; gap: 1ch; }
+.command-line label { flex-shrink: 0; white-space: pre-wrap; max-width: calc(100% - 2ch); }
+.command-line input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  color: inherit;
+  background: transparent;
+  caret-color: currentColor;
+  line-height: inherit;
+}
+.command-line:focus-within .prompt { text-decoration: underline; text-underline-offset: 0.2em; }
+a:focus-visible { outline: 1px solid currentColor; outline-offset: 2px; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

@@ -43,12 +43,11 @@ export default function App() {
           </section>
         ))}
       </div>
-      <form onSubmit={submit} aria-busy={busy}>
+      <form className="command-line" onSubmit={submit} aria-busy={busy}>
         <label htmlFor="command" className="prompt"><span className="sr-only">Command </span>{prompt}</label>
         <input id="command" value={input} onChange={event => setInput(event.target.value)}
-          readOnly={busy} autoComplete="off" autoCapitalize="off" spellCheck={false}
+          readOnly={busy} autoFocus autoComplete="off" autoCapitalize="off" spellCheck={false}
           onKeyDown={event => { if (event.key === 'Enter' && event.nativeEvent.isComposing) event.preventDefault(); }} />
-        <button type="submit" disabled={busy}>{busy ? 'Running…' : 'Run'}</button>
       </form>
     </main>
   );
