@@ -3,12 +3,13 @@
 Your portfolio, from the command line.
 
 TypeScript, React, and Vite portfolio starter. The terminal currently supports
-`help` and `about`; the remaining terminal and browse features are tracked in
+`help`, `about` (`whoami`), `projects`, `experience`, `contact`, and `clear`;
+remaining terminal and browse features are tracked in
 [BRIEF.md](BRIEF.md) and [TASKS.md](TASKS.md).
 
 See [CUSTOMIZATION.md](CUSTOMIZATION.md) for the configuration and sample Markdown
 content, including section visibility and prompt conventions. Configured identity,
-prompt, and enabled about content are connected to the terminal.
+prompt, and all enabled portfolio sections are connected to the terminal.
 
 ## Local development
 
@@ -47,9 +48,16 @@ when previewing. Full deployment instructions will follow with the deployment ta
 ## Current command behavior
 
 Type directly after the terminal prompt and press Enter. `help` lists registered commands;
-`about` renders `src/content/about.md` and any `src/content/about/**/*.md` files
-in path order as separate Markdown documents. Set `commands.about` to `false`
-to remove it from lookup and help.
+`about`, `projects`, `experience`, and `contact` render their matching root Markdown
+file and nested folder content in path order as separate documents. Empty files
+and missing content are valid. Set a section's flag in `config.commands` to `false`
+to remove its command and aliases from lookup and help. `whoami` aliases `about`.
+
+`clear` removes the transcript and welcome text, leaving the editable prompt. It
+only changes display state; history recall and persistence are still Task 7 work.
+`help` and `clear` remain available when every portfolio section is disabled.
+Project and contact links retain their Markdown labels; safe web and email URLs
+are clickable, while unsafe URLs and raw HTML are sanitized.
 
 Names are case-sensitive. Whitespace separates arguments; single or double quotes
 group words, preserve empty arguments, and can appear within a word. Backslashes
@@ -70,3 +78,21 @@ normal browser focus navigation. History and completion come in later tasks.
 
 `npm test` checks parsing, lookup, aliases, failures, prompt substitution, built-in
 content, and safe output using Node's test runner and Vite's existing module loader.
+
+## Register a custom command
+
+Pass commands as the third argument in `src/commands/index.ts`, for example:
+
+```ts
+export const registry = createPortfolioRegistry(config.commands, files, [{
+  name: 'hello',
+  aliases: ['hi'],
+  description: 'Say hello.',
+  execute: args => ({ type: 'text', text: `Hello ${args.join(' ') || 'visitor'}!` }),
+}]);
+```
+
+Remove the entry to remove the command and its aliases. Async `execute` functions
+work too. Help reads `registry.commands`, the same validated entries used for
+lookup and available for future completion. Duplicate names or aliases are rejected.
+No terminal engine or React changes are needed for a content command.

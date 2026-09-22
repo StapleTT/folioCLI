@@ -1,4 +1,5 @@
 export type CommandResult =
+  | { type: 'clear' }
   | { type: 'text'; text: string }
   | { type: 'markdown'; documents: string[] }
   | { type: 'error'; text: string };
@@ -39,8 +40,12 @@ export function parse(input: string): string[] {
 }
 
 export function createRegistry(commands: readonly Command[]) {
-  const lookup = new Map<string, Command>();
-  for (const command of commands) {
+  const registered = Object.freeze(commands.map(command => Object.freeze({
+    ...command,
+    aliases: command.aliases ? Object.freeze([...command.aliases]) : undefined,
+  })));
+  const lookup = new Map<string, (typeof registered)[number]>();
+  for (const command of registered) {
     for (const name of [command.name, ...(command.aliases ?? [])]) {
       if (!name || /[\s'"\\]/u.test(name)) {
         throw new Error(`Invalid command name or alias: ${name}`);
@@ -51,6 +56,7 @@ export function createRegistry(commands: readonly Command[]) {
   }
 
   return {
+    commands: registered,
     async execute(input: string): Promise<CommandResult | null> {
       let words: string[];
       try {

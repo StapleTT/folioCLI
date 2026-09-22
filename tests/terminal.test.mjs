@@ -8,6 +8,7 @@ const server = await createServer({ server: { middlewareMode: true, hmr: false, 
 after(() => server.close());
 const { parse, createRegistry, formatPrompt } = await server.ssrLoadModule('/src/terminal/engine.ts');
 const { default: Output } = await server.ssrLoadModule('/src/components/Output.tsx');
+const { createPortfolioRegistry } = await server.ssrLoadModule('/src/commands/portfolio.ts');
 const { registry } = await server.ssrLoadModule('/src/commands/index.ts');
 
 test('parsing preserves arguments and rejects incomplete quotes before execution', async () => {
@@ -49,7 +50,7 @@ test('prompt replacements are literal, repeated and nonrecursive', () => {
 });
 
 test('built-ins list registered commands and render discovered about content', async () => {
-  assert.match((await registry.execute('help')).text, /^help — .+\nabout — /);
+  assert.match((await registry.execute('help')).text, /^help — .+\nabout \(whoami\) — /);
   const result = await registry.execute('about');
   assert.equal(result.type, 'markdown');
   assert.match(result.documents[0], /# John Doe/);
@@ -69,4 +70,47 @@ test('output escapes plain text and sanitizes Markdown while retaining safe link
   assert.match(html, /href="mailto:hello@example.com"/);
   assert.doesNotMatch(html, /<script|onerror|javascript:|data:text\/html/);
   assert.match(html, /\[site\]\[ref\]/);
+});
+
+
+test('enabled sections share lookup, aliases, help and ordered content; custom commands extend the registry', async () => {
+  const enabled = { about: true, projects: true, experience: true, contact: true };
+  const files = {
+    'projects/z.md': 'last', 'projects.md': 'root', 'projects/tools/a.md': 'nested',
+    'projects/empty.md': '', 'projects/no.txt': 'excluded', 'Projects.md': 'excluded',
+    'projectstuff.md': 'excluded', 'about.md': 'owner', 'contact.md': 'email',
+  };
+  const custom = { name: 'hello', aliases: ['hi'], description: 'Say hello.', execute: async args => ({ type: 'text', text: args.join(' ') }) };
+  const core = createPortfolioRegistry(enabled, files, [custom]);
+  assert.deepEqual(await core.execute('projects'), { type: 'markdown', documents: ['root', '', 'nested', 'last'] });
+  assert.deepEqual(await core.execute('experience'), { type: 'markdown', documents: [] });
+  assert.deepEqual(await core.execute('whoami'), await core.execute('about'));
+  assert.equal((await core.execute('hi "hello world"')).text, 'hello world');
+  const help = (await core.execute('help')).text;
+  for (const command of core.commands) {
+    assert.ok(help.includes(command.name));
+    for (const alias of command.aliases ?? []) assert.ok(help.includes(alias));
+  }
+  assert.deepEqual(await core.execute('clear'), { type: 'clear' });
+  for (const section of Object.keys(enabled)) {
+    const disabled = createPortfolioRegistry({ ...enabled, [section]: false }, files);
+    assert.equal((await disabled.execute(section)).type, 'error');
+    assert.ok(!disabled.commands.some(command => command.name === section));
+    assert.ok(!(await disabled.execute('help')).text.includes(section));
+    if (section === 'about') {
+      assert.equal((await disabled.execute('whoami')).type, 'error');
+      assert.ok(!(await disabled.execute('help')).text.includes('whoami'));
+    }
+    assert.deepEqual(await disabled.execute('clear'), { type: 'clear' });
+  }
+  assert.throws(() => createPortfolioRegistry(enabled, files, [{ ...custom, name: 'whoami' }]), /Duplicate/);
+});
+
+test('demo project and contact output contain labeled safe links', async () => {
+  for (const [command, url] of [['projects', 'https://example.com/task-board'], ['contact', 'mailto:john@example.com']]) {
+    const html = renderToStaticMarkup(createElement(Output, { result: await registry.execute(command) }));
+    assert.ok(html.includes(`href="${url}"`));
+    assert.match(html, /<a href="[^"]+">[^<]+<\/a>/);
+  }
+  assert.equal(renderToStaticMarkup(createElement(Output, { result: { type: 'clear' } })), '');
 });

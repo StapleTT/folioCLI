@@ -11,6 +11,7 @@ export default function App() {
   const [input, setInput] = useState('');
   const [entries, setEntries] = useState<Entry[]>([]);
   const [busy, setBusy] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
   const executing = useRef(false);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -22,7 +23,10 @@ export default function App() {
     setInput('');
     try {
       const result = await registry.execute(submitted);
-      if (result) setEntries(previous => [...previous, { input: submitted, result }]);
+      if (result?.type === 'clear') {
+        setEntries([]);
+        setShowWelcome(false);
+      } else if (result) setEntries(previous => [...previous, { input: submitted, result }]);
     } finally {
       executing.current = false;
       setBusy(false);
@@ -31,10 +35,10 @@ export default function App() {
 
   return (
     <main>
-      <header>
+      {showWelcome && <header>
         <h1>{config.user.name}</h1>
         <p>Type "help" to see available commands.</p>
-      </header>
+      </header>}
       <div role="log" aria-label="Terminal output" aria-live="polite" aria-relevant="additions">
         {entries.map((entry, index) => (
           <section className="entry" key={index}>

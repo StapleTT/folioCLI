@@ -1,8 +1,8 @@
 # Portfolio content and customization
 
 These files establish the content contract for the first release. The terminal
-currently reads identity, prompt configuration, and enabled about Markdown content.
-Other section commands, theme selection, and browse mode arrive in later tasks.
+currently reads identity, prompt configuration, and all enabled Markdown sections.
+Theme selection and browse mode arrive in later tasks.
 
 ## Identity, prompt, theme, and sections
 
@@ -20,7 +20,7 @@ filesystem. Identity and prompt values are plain text, never HTML.
 
 Set a section's `commands` flag to `false` to remove its command and aliases from
 lookup, help, and completion, and hide all its content from browse mode. Set it
-back to `true` to restore it. All four flags are explicit booleans. These flags
+back to `true` to restore it. `whoami` is the built-in alias for `about`. All four flags are explicit booleans. These flags
 control only `about`, `projects`, `experience`, and `contact`; utility commands
 `help`, `clear`, and `browse` remain available. Visibility is not access control:
 do not place secrets in a static site's content, even in disabled sections.
